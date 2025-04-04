@@ -1,6 +1,4 @@
---VICODESKTOP\SQLEXPRESS
---DESKTOP-B1Q4OHC
---DESKTOP-O07390I\SQLEXPRESS
+
 
 USE master;
 GO
@@ -21,7 +19,7 @@ Create Table Rol_Usuario(
 Create Table Usuario(
 	Usuario_Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	Nombre varchar(255),
-	Contraseña varchar(255),
+	Contraseï¿½a varchar(255),
 	Rol_Id int FOREIGN KEY REFERENCES Rol_Usuario(Rol_Id),
 	Image varchar(1000),
 	Status bit,
@@ -352,8 +350,8 @@ GO
 Insert into Rol_Usuario(Rol) values ('Administrador')
 Insert into Rol_Usuario(Rol) values ('Usuario')
 --Tabla Usuario
-Insert into Usuario(Nombre,Contraseña,Rol_Id, Image, Status) values ('Sofia', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',1, '/img/customer/customer1.jpg',1)
-Insert into Usuario(Nombre,Contraseña,Rol_Id, Image, Status) values ('Victor', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',2, '/img/customer/customer5.jpg',1)
+Insert into Usuario(Nombre,Contraseï¿½a,Rol_Id, Image, Status) values ('Sofia', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',1, '/img/customer/customer1.jpg',1)
+Insert into Usuario(Nombre,Contraseï¿½a,Rol_Id, Image, Status) values ('Victor', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',2, '/img/customer/customer5.jpg',1)
 --Tabla Proveedor
 Insert into Proveedor(Nombre, Direccion, Image, Status) values ('Gonper', 'De la Policia, 1/2 al norte', '/img/images/default/imagen.png', 1)
 Insert into Proveedor(Nombre, Direccion, Image, Status) values ('Hispamer', '4PHJ+7X2, Managua 14003', '/img/images/default/imagen.png',1)
@@ -428,21 +426,21 @@ VALUES (1, 'Cuaderno Cosido Rayado', 2, 22, 24.77, 30, 5, '/img/images/images_pr
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
 VALUES (2, 'Cuaderno Espiral Rayado', 2, 16, 12.50, 16, 5, '/img/images/images_product/cuaderno_espiral_loro.png', 1);
 --select * from Producto where Categoria_Id = 2
---Lápices
+--Lï¿½pices
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
-VALUES (1, 'Lápiz Con Puntas', 3, 24, 3.17, 5, 10, '/img/images/images_product/Lapiz_pointer.png', 1);
+VALUES (1, 'Lï¿½piz Con Puntas', 3, 24, 3.17, 5, 10, '/img/images/images_product/Lapiz_pointer.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
-VALUES (1, 'Lápiz Grafito Jumbo', 3, 85, 2.02, 4, 9, '/img/images/images_product/Lapiz_jumbo.png', 1);
+VALUES (1, 'Lï¿½piz Grafito Jumbo', 3, 85, 2.02, 4, 9, '/img/images/images_product/Lapiz_jumbo.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status)  
-VALUES (2, 'Lápiz Grafito Neon', 3, 12, 2.08, 4, 14, '/img/images/images_product/Lapiz_neon.png', 1);
+VALUES (2, 'Lï¿½piz Grafito Neon', 3, 12, 2.08, 4, 14, '/img/images/images_product/Lapiz_neon.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
-VALUES (1, 'Lápiz Grafito Mecánico', 3, 24, 5.83, 8, 14, '/img/images/images_product/Lapiz_mecanico_stabilo.png', 1);
+VALUES (1, 'Lï¿½piz Grafito Mecï¿½nico', 3, 24, 5.83, 8, 14, '/img/images/images_product/Lapiz_mecanico_stabilo.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
-VALUES (1, 'Lápiz Metálico', 3, 135, 1.75, 3, 10, '/img/images/images_product/Lapiz_metalico_pointer.png', 1);
+VALUES (1, 'Lï¿½piz Metï¿½lico', 3, 135, 1.75, 3, 10, '/img/images/images_product/Lapiz_metalico_pointer.png', 1);
 --select * from Producto where Categoria_Id = 3
 
 --Blocks
@@ -485,7 +483,7 @@ Insert into Producto( Proveedor_Id, Descripcion, Categoria_Id, Cantidad,  Costo,
 VALUES (1, 'Acuarelas', 6, 3, 28, 30, 11, '/img/images/default/imagen.png', 1);
 
 Insert into Producto( Proveedor_Id, Descripcion, Categoria_Id, Cantidad,  Costo, Precio, Marca_Id, Image, Status)  
-VALUES (1, 'Crayolas Pequeñas Cajas', 6, 20, 8.33, 12, 12, '/img/images/default/imagen.png', 1);
+VALUES (1, 'Crayolas Pequeï¿½as Cajas', 6, 20, 8.33, 12, 12, '/img/images/default/imagen.png', 1);
 
 Insert into Producto( Proveedor_Id, Descripcion, Categoria_Id, Cantidad,  Costo, Precio, Marca_Id, Image, Status)  
 VALUES (2, 'Plastilina', 6, 7, 11.25, 14, 1, '/img/images/default/imagen.png', 1);
@@ -502,10 +500,10 @@ INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, P
 VALUES (1, 'Calculadora KD 815', 7, 4, 35, 40, 3, '/img/images/images_product/Calculadora.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status)  
-VALUES (1, 'Estuche Geométrico Metálico', 7, 9, 12.67, 18, 15, '/img/images/images_product/Estuche.png', 1);
+VALUES (1, 'Estuche Geomï¿½trico Metï¿½lico', 7, 9, 12.67, 18, 15, '/img/images/images_product/Estuche.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
-VALUES (1, 'Fichas Bibliográficas 3x5cm Pequeñas', 7, 6, 0, 1, 15, '/img/images/images_product/Fichas_bi.png', 1);
+VALUES (1, 'Fichas Bibliogrï¿½ficas 3x5cm Pequeï¿½as', 7, 6, 0, 1, 15, '/img/images/images_product/Fichas_bi.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status)  
 VALUES (1, 'Forros De Boletines', 7, 18, 15, 18, 15, '/img/images/images_product/Forro.png', 1);
@@ -517,19 +515,19 @@ VALUES (1, 'Mapas', 7, 12, 1.67, 3, 15, '/img/images/images_product/Mapas.png', 
 
 -- Material Escritura
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
-VALUES (1, 'Borradores De Cabeza De Lápiz', 8, 24, 1.07, 2, 10, '/img/images/images_product/Borrador_Punta_Lapiz.png', 1);
+VALUES (1, 'Borradores De Cabeza De Lï¿½piz', 8, 24, 1.07, 2, 10, '/img/images/images_product/Borrador_Punta_Lapiz.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status)  
 VALUES (1, 'Borradores De Grafito Grande', 8, 29, 2.25, 4, 14, '/img/images/images_product/Borrador.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
-VALUES (1, 'Borradores Lápiz', 8, 62, 4.50, 6, 15, '/img/images/images_product/Borrador_otro.png', 1);
+VALUES (1, 'Borradores Lï¿½piz', 8, 62, 4.50, 6, 15, '/img/images/images_product/Borrador_otro.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status)  
-VALUES (1, 'Corrector Lápiz', 8, 18, 4.50, 6, 10, '/img/images/images_product/Corrector.png', 1);
+VALUES (1, 'Corrector Lï¿½piz', 8, 18, 4.50, 6, 10, '/img/images/images_product/Corrector.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status)  
-VALUES (1, 'Marcador Acrílico AL', 8, 7, 0, 20, 9, '/img/images/images_product/Marcador.png', 1);
+VALUES (1, 'Marcador Acrï¿½lico AL', 8, 7, 0, 20, 9, '/img/images/images_product/Marcador.png', 1);
 --select * from Producto where Categoria_Id = 8
 
 -- Material Oficina
@@ -540,20 +538,20 @@ INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, P
 VALUES (1, 'Carpeta', 9, 12, 7, 15, 15, '/img/images/images_product/Carpeta.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status)  
-VALUES (1, 'Chinche Cabeza Plástico', 9, 6, 17, 20, 10, '/img/images/images_product/tachuelas.png', 1);
+VALUES (1, 'Chinche Cabeza Plï¿½stico', 9, 6, 17, 20, 10, '/img/images/images_product/tachuelas.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
-VALUES (1, 'Chinche Metálico Caja', 9, 35, 3.50, 5, 12, '/img/images/images_product/chinche.png', 1);
+VALUES (1, 'Chinche Metï¿½lico Caja', 9, 35, 3.50, 5, 12, '/img/images/images_product/chinche.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
-VALUES (1, 'Engrapadora Pequeña C/Grp', 9, 5, 32, 40, 15, '/img/images/images_product/engrapadora.png', 1);
+VALUES (1, 'Engrapadora Pequeï¿½a C/Grp', 9, 5, 32, 40, 15, '/img/images/images_product/engrapadora.png', 1);
 
 INSERT INTO Producto(Proveedor_Id, Descripcion, Categoria_Id, Cantidad, Costo, Precio, Marca_Id, Image, Status) 
 VALUES
     (1, 'Sellador 30yd', 9, 10, 8.00, 10.00, 10, '/img/images/images_product/cinta.png', 1),
     (2, 'Tape de regalo', 9, 34, 1.67, 3.00, 6, '/img/images/images_product/tape.png', 1),
     (2, 'Tape Escarchado', 9, 12, 12.00, 15.00, 6, '/img/images/images_product/tape_es.png', 1),
-    (1, 'Tijeras pequeña escolar S/P', 9, 17, 5.00, 7.00, 15, '/img/images/images_product/tijeras.png', 1),
+    (1, 'Tijeras pequeï¿½a escolar S/P', 9, 17, 5.00, 7.00, 15, '/img/images/images_product/tijeras.png', 1),
     (1, 'Tijeras Stanless Steel', 9, 2, 10.00, 15.00, 15, '/img/images/images_product/tijeras_s.png', 1);
 
 --select * from Producto where Categoria_Id = 9
@@ -565,7 +563,7 @@ VALUES
     (2, 'Banderas Plasticas', 10, 14, 1.50, 4.00, 15, '/img/images/images_product/bandera.png', 1),
     (2, 'Bolsa de Regalo Grande', 10, 12, 9.58, 15.00, 15, '/img/images/images_product/bolsa_grande.png', 1),
     (2, 'Bolsa de regalo mediana', 10, 11, 7.50, 10.00, 15, '/img/images/images_product/bolsa_mediana.png', 1),
-    (2, 'Bolsa de regalo pequeña/panam', 10, 10, 6.00, 8.00, 15, '/img/images/images_product/bolsa_pequeña.png', 1);
+    (2, 'Bolsa de regalo pequeï¿½a/panam', 10, 10, 6.00, 8.00, 15, '/img/images/images_product/bolsa_pequeï¿½a.png', 1);
 
 --select * from Producto where Categoria_Id = 10
 
@@ -575,7 +573,7 @@ VALUES
     (1, 'Hojas de Colores', 11, 131, 0.60, 1.00, 15, '/img/images/images_product/hojas_c.png', 1),
     (1, 'Pliegos de Papel Craff', 11, 44, 3.20, 5.00, 15, '/img/images/images_product/papel_craft.png', 1),
     (1, 'Pliegos de papel de regalo', 11, 48, 3.20, 5.00, 15, '/img/images/images_product/papel_regalo.png', 1),
-    (1, 'Pliegos de papelón Bond', 11, 82, 1.80, 4.00, 15, '/img/images/images_product/papel_bond.png', 1),
+    (1, 'Pliegos de papelï¿½n Bond', 11, 82, 1.80, 4.00, 15, '/img/images/images_product/papel_bond.png', 1),
     (1, 'Hojas blancas Resma de papel', 11, 467, 0.20, 0.50, 7, '/img/images/images_product/papel.png', 1);
 
 --select * from Producto where Categoria_Id = 11
