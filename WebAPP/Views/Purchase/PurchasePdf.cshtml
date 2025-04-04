@@ -1,0 +1,90 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Compras</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h1 {
+            color: #4B0082; /* Color lila */
+        }
+
+        h2 {
+            color: #1E90FF; /* Color celeste */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1E90FF; /* Color celeste */
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .header-image {
+            width: 150px;
+            height: auto;
+            float: right;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <img src="~/img/icons/viso1.jpeg" alt="Logo" class="header-image" />
+
+    <h1>Librería VISO</h1>
+    <h2>Lista de Compras</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Compra</th>
+                <th>Nombre del Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+                <th>Fecha</th>
+                <th>Proveedor</th>
+                <th>Usuario</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var purchases in Model)
+            {
+                <tr>
+                    <td>@purchases.DetalleCompra_Id</td>
+                    <td>@purchases.Products.Descripcion</td>
+                    <td>@purchases.Cantidad</td>
+                    <td>@purchases.Precio_Unitario.ToString("C")</td>
+                    <td>@purchases.Total.ToString("C")</td>
+                    <td>@purchases.Purchases.Fecha.ToShortDateString()</td>
+                    <td>@purchases.Suppliers.Nombre</td>
+                    <td>@purchases.Users.Nombre</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

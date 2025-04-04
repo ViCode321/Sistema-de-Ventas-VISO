@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.102.2" />
+    <PackageReference Include="EPPlus" Version="7.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.17" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.12" />
+    <PackageReference Include="PdfSharpCore" Version="1.3.63" />
+    <PackageReference Include="QuestPDF" Version="2024.3.9" />
+    <PackageReference Include="Rotativa.AspNetCore" Version="1.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Models\Models.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="wwwroot\img\images\images_supplier\" />
+    <Folder Include="wwwroot\img\images\images_brand\" />
+    <Folder Include="wwwroot\img\images\images_category\" />
+    <Folder Include="wwwroot\img\images\images_supplier\" />
+    <Folder Include="wwwroot\img\images\images_user\" />
+  </ItemGroup>
+
+</Project>

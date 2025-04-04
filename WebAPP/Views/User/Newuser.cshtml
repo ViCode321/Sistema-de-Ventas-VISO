@@ -1,0 +1,156 @@
+﻿@model project_DBA_VISO.Models.User
+@{
+    ViewData["Title"] = "New User";        
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Agregar usuario</h4>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="userForm" asp-action="Newuser" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Nombre">Nombre de usuario</label>
+                            <input asp-for="Nombre" type="text" required>
+                            <span asp-validation-for="Nombre"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Contraseña">Contraseña</label>
+                            <div class="pass-group">
+                                <input asp-for="Contraseña" type="password" class=" pass-input" required>
+                                <span asp-validation-for="Contraseña" class="fas toggle-password fa-eye-slash"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Rol_Id">Rol</label>
+                            <select asp-for="Rol_Id" class="select" asp-items="ViewBag.Rol_id"></select>
+                            <span asp-validation-for="Rol_Id" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Contraseña">Confirmar Contraseña</label>
+                            <div class="pass-group">
+                                <input asp-for="Contraseña" type="password" class=" pass-inputs">
+                                <span asp-validation-for="Contraseña" class="fas toggle-passworda fa-eye-slash"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label>Imagen del producto</label>
+                            <div class="image-upload">
+                                <input asp-for="Image" type="file" id="Image" name="Image">
+                                <div class="image-uploads">
+                                    <img src="~/img/icons/upload.svg" alt="img">
+                                    <h4>Arrastra y suelta un archivo para cargar</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="product-list">
+                            <ul class="row">
+                                <li>
+                                    <div class="productviews">
+                                        <img id="imagePreview" src="#" alt="img" />
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn btn-submit me-2">
+                            Crear
+                        </button>
+                        <a asp-controller="User" asp-action="Userlist" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#imagePreview').attr('src', e.target.result);
+                        $('#imagePreview').show();
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#Image").change(function () {
+                readURL(this);
+            });
+
+            $('#userForm').on('submit', function (event) {
+                event.preventDefault();
+
+                var formData = new FormData(this);
+                // Obtén las contraseñas del formulario
+                var password = $('.pass-input').val();
+                var confirmPassword = $('.pass-inputs').val();
+
+                // Verifica si las contraseñas son iguales
+                if (password !== confirmPassword) {
+                    // Muestra un mensaje de error si las contraseñas no son iguales
+                    Swal.fire({
+                        title: "Error",
+                        text: "Las contraseñas no coinciden.",
+                        icon: "error",
+                        confirmButtonColor: "#d33",
+                        confirmButtonText: "OK"
+                    });
+                    return; // No continúes con el envío del formulario
+                }
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: $(this).attr('method'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: "¡Creación exitosa!",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "Ok",
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    }
+
+                });
+            });
+        });
+    </script>
+}
+

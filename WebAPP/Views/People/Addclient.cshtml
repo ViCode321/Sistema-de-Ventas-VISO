@@ -1,0 +1,93 @@
+﻿@model project_DBA_VISO.Models.Client
+@{
+    ViewData["Title"] = "Nuevo cliente";
+}
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Nuevo cliente</h4>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="clientForm" asp-action="Addclient" method="post">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Nombre">Nombre</label>
+                            <input asp-for="Nombre" type="text">
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Apellido">Apellido</label>
+                            <input asp-for="Apellido" type="text">
+                            <span asp-validation-for="Apellido" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn btn-submit me-2">
+                            Crear
+                        </button>
+                        <a asp-controller="People" asp-action="Clientlist" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        function limpiarCampos() {
+            var form = document.getElementById('clientForm');
+
+            var inputs = form.getElementsByTagName('input');
+
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].value = '';
+            }
+        }
+        $('#clientForm').on('submit', function (event) {
+            event.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: "¡Cliente creado!",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonColor: "#3085d6",
+                            confirmButtonText: "Ok",
+                        }).then((result) => {
+                            limpiarCampos();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error",
+                            text: response.message,
+                            icon: "error",
+                            confirmButtonColor: "#d33",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr, status, error);
+                }
+
+            });
+        });
+
+</script>
+}

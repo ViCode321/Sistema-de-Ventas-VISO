@@ -1,0 +1,91 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Proveedores</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h1 {
+            color: #4B0082; /* Color lila */
+        }
+
+        h2 {
+            color: #1E90FF; /* Color celeste */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1E90FF; /* Color celeste */
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .header-image {
+            width: 150px;
+            height: auto;
+            float: right;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <img src="~/img/icons/viso1.jpeg" alt="Logo" class="header-image" />
+
+    <h1>Librería VISO</h1>
+    <h2>Lista de Proveedores</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Proveedor</th>
+                <th>Nombre</th>
+                <th>Teléfonos</th>
+                <th>Dirección</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var supplier in Model)
+            {
+                
+                <tr>
+                    <td>@supplier.Proveedor_Id</td>
+                    <td>@supplier.Nombre</td>
+                    <td>
+                        @foreach (var phone in supplier.Phones)
+                        {
+                            @phone.Numero
+                            <br />
+                        }
+                    </td>
+                    <td>@supplier.Direccion</td>
+                    <td>@(supplier.Status ? "Activo" : "Inactivo")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

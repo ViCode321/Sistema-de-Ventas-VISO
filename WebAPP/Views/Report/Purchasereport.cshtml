@@ -1,0 +1,206 @@
+﻿@model IEnumerable<project_DBA_VISO.Models.Purchase_Detail>
+@{
+    ViewData["Title"] = "Reporte de Compras";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Reporte de Compras</h4>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-top">
+                <div class="search-set">
+                    <div class="search-input">
+                        <a class="btn btn-searchset">
+                            <img src="~/img/icons/search-white.svg"
+                                 alt="img">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="table-responsive">
+                    @if (Model.Count() < 0)
+                    {
+                    <table class="table  datanew">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(d => d.DetalleCompra_Id)</th>
+                                <th>@Html.DisplayNameFor(pd => pd.Producto_Id)</th>
+                                <th>@Html.DisplayNameFor(c => c.Cantidad)</th>
+                                <th>@Html.DisplayNameFor(pr => pr.Precio_Unitario)</th>
+                                <th>@Html.DisplayNameFor(t => t.Total)</th>
+                                <th>@Html.DisplayNameFor(f => f.Purchases!.Fecha)</th>
+                                <th>@Html.DisplayNameFor(po => po.Proveedor_Id)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(i => item.DetalleCompra_Id)</td>
+                                    <td>@Html.DisplayFor(i => item.Products!.Descripcion)</td>
+                                    <td>@Html.DisplayFor(i => item.Cantidad)</td>
+                                    <td>@Html.DisplayFor(i => item.Precio_Unitario)</td>
+                                    <td>@Html.DisplayFor(i => item.Total)</td>
+                                    <td>@Html.DisplayFor(i => item.Purchases!.Fecha)</td>
+                                    <td>@Html.DisplayFor(i => item.Suppliers!.Nombre)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    }
+                    else
+                    {
+                        <p class="text-center">No hay Registros</p>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Compras Mensuales</h5>
+                </div>
+                <div class="card-body">
+                    <!--<div id="s-line" class="chart-set"></div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+        var comprasMensualesData = @Html.Raw(Json.Serialize(ViewBag.ComprasMensuales));
+        var comprasMensuales = comprasMensualesData.$values || comprasMensualesData;
+
+        var lightOptions = {
+            series: [{
+                name: "Compras",
+                data: comprasMensuales.map(x => x.totalCompras)
+            }],
+            chart: {
+                height: 350,
+                type: 'line',
+                zoom: {
+                    enabled: false
+                },
+                foreColor: '#000',
+                toolbar: {
+                    show: false
+                },
+                background: '#fff'
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            xaxis: {
+                categories: comprasMensuales.map(x => 'Semana ' + x.semana),
+            },
+            title: {
+                text: 'Compras Mensuales por Semana',
+                align: 'left'
+            },
+            tooltip: {
+                theme: 'light'
+            },
+            grid: {
+                borderColor: '#565656',
+                row: {
+                    colors: ['#f3f3f3', 'transparent'],
+                    opacity: 0.5
+                },
+            },
+            legend: {
+                labels: {
+                    colors: '#000'
+                }
+            }
+        };
+
+        var darkOptions = {
+            series: [{
+                name: "Compras",
+                data: comprasMensuales.map(x => x.totalCompras)
+            }],
+            chart: {
+                height: 350,
+                type: 'line',
+                zoom: {
+                    enabled: false
+                },
+                foreColor: '#fff',
+                toolbar: {
+                    show: false
+                },
+                background: '#1d1d42'
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'straight'
+            },
+            xaxis: {
+                categories: comprasMensuales.map(x => 'Semana ' + x.semana),
+            },
+            title: {
+                text: 'Compras Mensuales por Semana',
+                align: 'left'
+            },
+            tooltip: {
+                theme: 'dark'
+            },
+            grid: {
+                row: {
+                    colors: ['#353570', 'transparent'],
+                    opacity: 0.5
+                },
+            },
+            legend: {
+                labels: {
+                    colors: '#000'
+                }
+            }
+        };
+
+
+        var chart = new ApexCharts(document.querySelector("#s-line"), lightOptions);
+        chart.render();
+
+
+        function updateChartTheme() {
+            var theme = document.body.getAttribute('data-theme');
+            if (theme === 'dark') {
+                chart.updateOptions(darkOptions);
+            } else {
+                chart.updateOptions(lightOptions);
+            }
+        }
+
+        var observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                if (mutation.attributeName === 'data-theme') {
+                    updateChartTheme();
+                }
+            });
+        });
+
+        observer.observe(document.body, { attributes: true });
+
+        updateChartTheme();
+    </script>
+}
+
+

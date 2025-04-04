@@ -1,0 +1,223 @@
+﻿@model IEnumerable<project_DBA_VISO.Models.Invoice_Detail>
+@{
+    ViewData["Title"] = "Reporte de ventas";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Reporte de Ventas</h4>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-top">
+                <div class="search-set">
+                    <div class="search-input">
+                        <a class="btn btn-searchset">
+                            <img src="~/img/icons/search-white.svg"
+                                 alt="img">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="table-responsive">
+                    <!--Cambio de mayor a menor-->
+                    @if (Model.Count() < 0)
+                    {
+                    <table class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(i => i.Factura_Id)</th>
+                                <th>@Html.DisplayNameFor(pd => pd.Producto_Id)</th>
+                                <th>@Html.DisplayNameFor(cl => cl.Invoices!.Cliente_Id)</th>
+                                <th>@Html.DisplayNameFor(m => m.Invoices!.Moneda_Id)</th>
+                                <th>@Html.DisplayNameFor(ca => ca.Cantidad)</th>
+                                <th>@Html.DisplayNameFor(pr => pr.Precio)</th>
+                                <th>@Html.DisplayNameFor(t => t.Total_ventas)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(i => item.Factura_Id)</td>
+                                    <td>
+                                        <a asp-action="Salesdetails" asp-route-id="@item.Factura_Id">
+                                            @Html.DisplayFor(i => item.Products!.Descripcion)
+                                        </a>
+                                    </td>
+                                    <td>
+                                        @if (item.Invoices != null && item.Invoices.Clients != null)
+                                        {
+                                            <a>@Html.DisplayFor(i => item.Invoices.Clients.Nombre)</a>
+                                            <a>@Html.DisplayFor(i => item.Invoices.Clients.Apellido)</a>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.Invoices != null && item.Invoices.Currencies != null)
+                                        {
+                                            @Html.DisplayFor(i => item.Invoices.Currencies.Tipo)
+                                        }
+                                    </td>
+                                    <td>@Html.DisplayFor(i => item.Cantidad)</td>
+                                    <td>@Html.DisplayFor(i => item.Precio)</td>
+                                    <td>@Html.DisplayFor(i => item.Total_ventas)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    }
+                    else
+                    {
+                        <p class="text-center">No hay Registros</p>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Ventas Mensuales</h5>
+                </div>
+                <div class="card-body">
+                    <!--<div id="s-line" class="chart-set"></div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section scripts {
+    <script>
+        var ventasMensualesData = @Html.Raw(Json.Serialize(ViewBag.VentasMensuales));
+        var ventasMensuales = ventasMensualesData.$values || ventasMensualesData;
+        
+        var lightOptions = {
+            series: [{
+                name: "Ventas",
+                data: ventasMensuales.map(x => x.totalVentas)
+            }],
+            chart: {
+                height: 350,
+                type: 'line',
+                zoom: {
+                    enabled: false
+                },
+                foreColor: '#000',
+                toolbar: {
+                    show: false
+                },
+                background: '#fff'
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            xaxis: {
+                categories: ventasMensuales.map(x => 'Semana ' + x.semana),
+            },
+            title: {
+                text: 'Ventas Mensuales por Semana',
+                align: 'left'
+            },
+            tooltip: {
+                theme: 'light'
+            },
+            grid: {
+                borderColor: '#565656',
+                row: {
+                    colors: ['#f3f3f3', 'transparent'],
+                    opacity: 0.5
+                },
+            },
+            legend: {
+                labels: {
+                    colors: '#000'
+                }
+            }
+        };
+
+        var darkOptions = {
+            series: [{
+                name: "Ventas",
+                data: ventasMensuales.map(x => x.totalVentas)
+            }],
+            chart: {
+                height: 350,
+                type: 'line',
+                zoom: {
+                    enabled: false
+                },
+                foreColor: '#fff',
+                toolbar: {
+                    show: false
+                },
+                background: '#1d1d42'
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'straight'
+            },
+            xaxis: {
+                categories: ventasMensuales.map(x => 'Semana ' + x.semana),
+            },
+            title: {
+                text: 'Ventas Mensuales por Semana',
+                align: 'left'
+            },
+            tooltip: {
+                theme: 'dark'
+            },
+            grid: {
+                row: {
+                    colors: ['#353570', 'transparent'],
+                    opacity: 0.5
+                },
+            },
+            legend: {
+                labels: {
+                    colors: '#000'
+                }
+            }
+        };
+
+
+        var chart = new ApexCharts(document.querySelector("#s-line"), lightOptions);
+        chart.render();
+
+
+        function updateChartTheme() {
+            var theme = document.body.getAttribute('data-theme');
+            if (theme === 'dark') {
+                chart.updateOptions(darkOptions);
+            } else {
+                chart.updateOptions(lightOptions);
+            }
+        }
+
+        var observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                if (mutation.attributeName === 'data-theme') {
+                    updateChartTheme();
+                }
+            });
+        });
+
+        observer.observe(document.body, { attributes: true });
+
+        updateChartTheme();
+    </script>
+}
+
+

@@ -1,0 +1,178 @@
+﻿@model project_DBA_VISO.Models.Product
+@{
+    ViewData["Title"] = "Editar producto";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Editar Producto</h4>
+            <!--<h6>Update your product</h6>-->
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+             <form asp-action="Editproduct" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Producto_Id" />
+
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Descripcion">Descripción</label>
+                            <input asp-for="Descripcion" type="text" required>
+                            <span asp-validation-for="Descripcion" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            @if (Model.Categories != null && Model.Categories.Status)
+                            {
+                                <label asp-for="Categoria_Id">Categoria</label>
+                                <select asp-for="Categoria_Id" class="select" asp-items="ViewBag.Categorias"></select>
+                                <span asp-validation-for="Categoria_Id" class="text-danger"></span>
+                            }
+                            else
+                            {
+                                <label>Categoria</label>
+                                <select asp-for="Categoria_Id" class="select" asp-items="ViewBag.Categorias"></select>
+                                <span asp-validation-for="Categoria_Id" class="text-danger"></span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Marca_Id">Marca</label>
+                            <select asp-for="Marca_Id" class="select" asp-items="ViewBag.Marcas"></select>
+                            <span asp-validation-for="Marca_Id" class="text-danger"></span>                        
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Proveedor_Id">Proveedor</label>
+                            <select asp-for="Proveedor_Id" class="select" asp-items="ViewBag.Proveedores"></select>
+                            <span asp-validation-for="Proveedor_Id" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Cantidad">Cantidad</label>
+                            <input asp-for="Cantidad" type="text" readonly>
+                            <span asp-validation-for="Cantidad" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Costo">Costo</label>
+                            <input asp-for="Costo" type="text" onkeypress="return SoloNumeros(event);" required>
+                            <span asp-validation-for="Costo" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Precio">Precio</label>
+                            <input asp-for="Precio" type="text" onkeypress="return SoloNumeros(event);" required>
+                            <span asp-validation-for="Precio" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label>Imagen del producto</label>
+                            <div class="image-upload">
+                                <input type="file" id="Image" name="Image">
+                                <div class="image-uploads">
+                                    <img src="~/img/icons/upload.svg" alt="img">
+                                    <h4>Arrastra y suelta un archivo para cargar</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="product-list">
+                            <ul class="row">
+                                <li>
+                                    <div class="productviews">
+                                        @if (!string.IsNullOrEmpty(Model.Image))
+                                        {
+                                            <div class="productviewsimg">
+                                                <img src="@Model.Image" alt="img">
+                                            </div>
+                                        }
+                                        <div class="productviewscontent">
+                                            <div class="productviewsname">
+                                                <h2>@Model.Descripcion</h2>
+                                            </div>
+                                            <!--<a class="hideset">x</a>-->
+                                        </div>
+                                        
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn btn-submit me-2">
+                            Actualizar
+                        </button>
+                        <a asp-controller="Product" asp-action="Productlist" class="btn btn-cancel">Cancel</a>
+                    </div>
+            </div>           
+            </form>
+        </div>
+
+    </div>
+</div>
+<script src="~/js/validations.js"></script>
+
+@section scripts{
+    <script src="~/js/image_edit.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("form").submit(function (event) {
+                event.preventDefault();
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: "Producto actualizado",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "OK"
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    },
+                    error: function () {
+                        // Si hubo un error en la petición Ajax, muestra un mensaje de error
+                        Swal.fire({
+                            title: "Error",
+                            text: "Se produjo un error al procesar la solicitud.",
+                            icon: "error",
+                            confirmButtonColor: "#d33",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
+        

@@ -1,0 +1,293 @@
+﻿@using System.Security.Claims
+@{
+    string rol = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+}
+@model IEnumerable<project_DBA_VISO.Models.Supplier>
+@{
+    ViewData["Title"] = "Lista de proveedores";
+}
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Lista de proveedores</h4>
+        </div>
+        <div class="page-btn">
+            <a asp-controller="People" asp-action="Addsupplier" class="btn btn-added">
+                <img src="~/img/icons/plus.svg" alt="img">Nuevo
+                Proveedor
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-top">
+                <div class="search-set">
+                    <div class="search-input">
+                        <a class="btn btn-searchset"><img src="~/img/icons/search-white.svg" alt="img"></a>
+                    </div>
+                </div>
+                <div class="wordset">
+                                        @if (rol == "Administrador")
+                    {
+                    <ul>
+                        <li>
+                            <a href="/People/ExportSuppliersToPdf" data-bs-toggle="tooltip" data-bs-placement="top" title="pdf">
+                                <img src="~/img/icons/pdf.svg" alt="img">
+                            </a>
+                        </li>
+                        <li>
+                            <a id="exportExcel" data-bs-toggle="tooltip" data-bs-placement="top" title="excel">
+                                <img src="~/img/icons/excel.svg" alt="img">
+                            </a>
+                        </li>
+                    </ul>
+                    }
+                </div>
+            </div>
+            <input type="hidden" id="userRole" value="@rol" />
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="table-responsive">
+                    <!--Cambio de mayor a menor-->
+                    @if (Model.Count() < 0)
+                    {
+                    <table id="tabla" class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(s => s.Proveedor_Id)</th>
+                                <th>@Html.DisplayNameFor(s => s.Image)</th>
+                                <th>@Html.DisplayNameFor(s => s.Nombre)</th>
+                                <th>@Html.DisplayNameFor(s => s.Direccion)</th>
+                                <th>Teléfono</th>
+                                <th>@Html.DisplayNameFor(s => s.Status)</th>
+                                @if (rol == "Administrador")
+                                {
+                                    <th>Action</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(m => item.Proveedor_Id)</td>
+                                    @if (!string.IsNullOrEmpty(item.Image))
+                                    {
+                                        <td>
+                                            <a class="product-img">
+                                                <img src="@item.Image" alt="product">
+                                            </a>
+                                        </td>
+                                    }
+                                    <td>@Html.DisplayFor(m => item.Nombre)</td>
+                                    <td>@Html.DisplayFor(m => item.Direccion)</td>
+                                    <td>
+                                        @foreach (var phone in item.Phones)
+                                        {
+                                            @phone.Numero
+                                            <br />
+                                        }
+                                    </td>
+                                    @if (item.Status)
+                                    {
+                                        <td>
+                                            <span class="badges bg-lightgreen">Activo</span>
+                                        </td>
+                                        @if (rol == "Administrador")
+                                        {
+                                            <td>
+                                                <a class="me-3" asp-action="Editsupplier" asp-route-id="@item.Proveedor_Id">
+                                                    <img src="~/img/icons/edit.svg" alt="img">
+                                                </a>
+                                                <a class="confirm-text delete-supplier" data-supplier-id="@item.Proveedor_Id">
+                                                    <img src="~/img/icons/delete.svg" alt="img">
+                                                </a>
+                                            </td>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <span class="badges bg-lightred">Inactivo</span>
+                                        </td>
+                                        @if (rol == "Administrador")
+                                        {
+                                            <td>
+                                                <a class="confirm-text activate-supplier" data-supplier-id="@item.Proveedor_Id">
+                                                    <i class="fa fa-check"></i>
+                                                </a>
+                                            </td>
+                                        }
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    }
+                    else
+                    {
+                        <p class="text-center">No hay Registros</p>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+
+            var tabla = $('#tabla').DataTable();
+
+            $(document).on("click", ".delete-supplier", function () {
+                var supplierId = $(this).data("supplier-id");
+                var currentPage = tabla.page(); // Guardar la página actual
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "¿Quieres desactivar el estado proveedor?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarProveedor(supplierId, '/People/DeleteConfirmedSupplier', currentPage);
+                    }
+                });
+            });
+
+            $(document).on("click", ".activate-supplier", function () {
+                var supplierId = $(this).data("supplier-id");
+                var currentPage = tabla.page(); // Guardar la página actual
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "¿Quieres activar el estado del proveedor?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarProveedor(supplierId, '/People/ActivateConfirmedSupplier', currentPage);
+                    }
+                });
+            });
+
+            function actualizarFormulario(data) {
+                // Limpia los datos existentes
+                tabla.clear();
+
+                $.each(data.$values, function (i, item) {
+                    var userRole = $('#userRole').val();
+                    var deleteIcon = '';
+                    var editIcon = '';
+
+                    if (userRole == 'Administrador') {
+                        deleteIcon = '<a class="confirm-text delete-supplier" data-supplier-id=' + item.proveedor_Id + '><img src="/img/icons/delete.svg" alt="img"></a>';
+                        editIcon = '<a class="me-3" href="/People/Editsupplier/' + item.proveedor_Id + '"><img src="/img/icons/edit.svg" alt="img"></a>';
+                    }
+                    var productImg = '';
+                    if (item.image) {
+                        productImg = '<td><a class="product-img"><img src="' + item.image + '" alt="product"></a></td>';
+                    } else {
+                        productImg = '<td></td>'; // Asegúrate de agregar una celda vacía si no hay imagen
+                    }
+
+                    var statusCell = '';
+                    var actionCell = '';
+                    if (item.status) {
+                        statusCell = '<td><span class="badges bg-lightgreen">Activo</span></td>';
+                        actionCell = '<td>' + editIcon +  deleteIcon + '</td>';
+                    } else {
+                        statusCell = '<td><span class="badges bg-lightred">Inactivo</span></td>';
+                        actionCell = '<td><a class="confirm-text activate-supplier" data-supplier-id="' + item.proveedor_Id + '"><i class="fa fa-check"></i></a></td>';
+                    }
+
+                    var phoneNumbers = '';
+                    $.each(item.phones.$values, function (j, phone) {
+                        phoneNumbers += '<td>' + phone.numero + '</td><br>';
+                    });
+
+                    var row = [
+                        '<td>' + item.proveedor_Id + '</td>',
+                        productImg,
+                        '<td>' + item.nombre + '</td>',
+                        '<td>' + item.direccion + '</td>',
+                        phoneNumbers,
+                        statusCell,
+                        actionCell
+                    ];
+
+                    // Añade la fila a DataTables en lugar de directamente al cuerpo de la tabla
+                    tabla.row.add(row);
+                });
+
+                // Dibuja la tabla con los nuevos datos
+                tabla.draw(false);
+            }
+
+            function eliminarProveedor(supplierId, url, currentPage) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        id: supplierId,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: "¡Acción exitosa!",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "Ok",
+                            }).then((result) => {
+                                // Aquí es donde haces la nueva solicitud AJAX para obtener los datos actualizados
+                                $.ajax({
+                                    url: '/People/SupplierlistJson',
+                                    type: 'GET',
+                                    success: function (updatedData) {
+                                        actualizarFormulario(updatedData);
+                                        tabla.page(currentPage).draw('page'); // Restaurar la página actual
+                                    }
+                                });
+                            });
+                        }
+                        else {
+                            Swal.fire({
+                                title: "Error",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error, supplierId);
+                    }
+                });
+            }
+        });
+
+        //para exel
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("exportExcel").addEventListener("click", function () {
+                window.location.href = '/People/ExportSuppliersToExcel';
+            });
+        });
+
+    </script>
+
+}
+

@@ -1,0 +1,140 @@
+﻿@model project_DBA_VISO.Models.User
+@{
+    ViewData["Title"] = "Editar usuario";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Editar usuario</h4>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="Edituser" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Usuario_Id" />
+
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Nombre">Nombre de usuario</label>
+                            <input asp-for="Nombre" type="text" required>
+                            <span asp-validation-for="Nombre"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Contraseña">Contraseña</label>
+                            <div class="pass-group">
+                                <input asp-for="Contraseña" type="password" class=" pass-input" required>
+                                <span asp-validation-for="Contraseña" class="fas toggle-password fa-eye-slash"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Rol_Id">Rol</label>
+                            <select asp-for="Rol_Id" class="select" asp-items="ViewBag.Roles"></select>
+                            <span asp-validation-for="Rol_Id" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Contraseña">Confirmar Contraseña</label>
+                            <div class="pass-group">
+                                <input asp-for="Contraseña" type="password" class=" pass-inputs">
+                                <span asp-validation-for="Contraseña" class="fas toggle-passworda fa-eye-slash"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label>Imagen del producto</label>
+                            <div class="image-upload">
+                                <input type="file" id="Image" name="Image">
+                                <div class="image-uploads">
+                                    <img src="~/img/icons/upload.svg" alt="img">
+                                    <h4>Arrastra y suelta un archivo para cargar</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="product-list">
+                            <ul class="row">
+                                <li>
+                                    <div class="productviews">
+                                        @if (!string.IsNullOrEmpty(Model.Image))
+                                        {
+                                            <div class="productviewsimg">
+                                                <img src="@Model.Image" alt="img">
+                                            </div>
+                                        }
+                                        <div class="productviewscontent">
+                                            <div class="productviewsname">
+                                                <h2>@Model.Nombre</h2>
+                                            </div>
+                                            <!--<a class="hideset">x</a>-->
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn btn-submit me-2">
+                            Actualizar
+                        </button>
+                        <a asp-controller="User" asp-action="Userlist" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script src="~/js/image_edit.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("form").submit(function (event) {
+                event.preventDefault();
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: "Usuario actualizado",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "OK"
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            title: "Error",
+                            text: "Se produjo un error al procesar la solicitud.",
+                            icon: "error",
+                            confirmButtonColor: "#d33",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

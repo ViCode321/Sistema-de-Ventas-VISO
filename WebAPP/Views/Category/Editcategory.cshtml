@@ -1,0 +1,123 @@
+﻿@model project_DBA_VISO.Models.Category
+@{
+    ViewData["title"] = "Editar categoría";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Editar categoría de producto</h4>
+            <!--<h6>Edit a product Category</h6>-->
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-controller="Category" asp-action="Editcategory" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Categoria_Id" />
+
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label asp-for="Nombre">Nombre</label>
+                            <input asp-for="Nombre" type="text">
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label>Imagen de la marca</label>
+                            <div class="image-upload">
+                                <input type="file" id="Image" name="Image">
+                                <div class="image-uploads">
+                                    <img src="~/img/icons/upload.svg" alt="img">
+                                    <h4>Arrastra y suelta un archivo para cargar</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="product-list">
+                            <ul class="row">
+                                <li>
+                                    <div class="productviews">
+                                        @if (!string.IsNullOrEmpty(Model.Image))
+                                        {
+                                            <div class="productviewsimg">
+                                                <img src="@Model.Image" alt="img">
+                                            </div>
+                                        }
+                                        <div class="productviewscontent">
+                                            <div class="productviewsname">
+                                                <h2>@Model.Nombre</h2>
+                                            </div>
+                                            <!--<a class="hideset">x</a>-->
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn btn-submit me-2">
+                            Actualizar
+                        </button>
+                        <a asp-controller="Category" asp-action="Categorylist" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/image_edit.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("form").submit(function (event) {
+                event.preventDefault();
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: "Categoría actualizada",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "OK"
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    },
+                    error: function () {
+                        // Si hubo un error en la petición Ajax, muestra un mensaje de error
+                        Swal.fire({
+                            title: "Error",
+                            text: "Se produjo un error al procesar la solicitud.",
+                            icon: "error",
+                            confirmButtonColor: "#d33",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
+

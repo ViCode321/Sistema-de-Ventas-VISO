@@ -1,0 +1,112 @@
+﻿@model project_DBA_VISO.Models.Product
+@{
+    ViewData["title"] = "Detalles de Producto";
+}
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Detalles de Producto</h4>
+            <!--<h6>Full details of a product</h6>-->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <!--
+                    <div class="bar-code-view">
+                        <img src="~/img/barcode1.png" alt="barcode">
+                        <a class="printimg">
+                            <img src="~/img/icons/printer.svg" alt="print">
+                        </a>
+                    </div>-->
+                    <div class="productdetails">
+                        <ul class="product-bar">
+                            <li>
+                                <h4>Código</h4>
+                                <h6>@Model.Producto_Id</h6>
+                            </li>
+                            <li>
+                                <h4>Descripción</h4>
+                                <h6>@Model.Descripcion</h6>
+                            </li>
+                            <li>
+                                <h4>Categoría</h4>
+                                @if (Model.Categories!.Status)
+                                {
+                                    <h6>@Model.Categories.Nombre</h6>
+                                }
+                                else
+                                {
+                                    <h6>
+                                        <span class="badges bg-lightred">N/A</span>
+                                    </h6>
+                                }
+                            </li>
+                            <li>
+                                <h4>Marca</h4>
+                                @if (Model.Brands!.Status)
+                                {
+                                    <h6>@Model.Brands.Nombre</h6>
+                                }
+                                else
+                                {
+                                    <h6>
+                                        <span class="badges bg-lightred">N/A</span>
+                                    </h6>
+                                }
+                            </li>
+                            <li>
+                                <h4>Proveedor</h4>
+                                <h6>@Model.Suppliers.Nombre</h6>
+                            </li>
+                            <li>
+                                <h4>Cantidad</h4>
+                                <h6>@Model.Cantidad</h6>
+                            </li>
+                            <li>
+                                <h4>Costo</h4>
+                                <h6>@Model.Costo</h6>
+                            </li>
+                            <li>
+                                <h4>Precio</h4>
+                                <h6>@Model.Precio</h6>
+                            </li>
+                            <!--<li>
+                                <h4>Fecha de Creación</h4>
+                                <h6>Model.Suppliers.</h6>
+                            </li>-->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="slider-product-details">
+                        <div class="owl-carousel owl-theme product-slide">
+                            @if(!string.IsNullOrEmpty(Model.Image))
+                            {
+                                <div class="slider-product">
+                                    <img src="@Model.Image" alt="img">
+                                    <h4>@Model.Descripcion</h4>
+                                    <!--<h6>581kb</h6>-->
+                                </div>
+                            }
+                            <!--
+                            <div class="slider-product">
+                                <img src="~/img/product/product69.jpg" alt="img">
+                                <h4>macbookpro.jpg</h4>
+                                <h6>581kb</h6>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+

@@ -1,0 +1,439 @@
+﻿@using System.Security.Claims
+@{
+    string rol = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+}
+@model IEnumerable<project_DBA_VISO.Models.Purchase_Detail>
+@{
+    ViewData["title"] = "Edit expense";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Editar compra</h4>
+            <div>
+                Número de Compra #
+                <strong>@ViewBag.Compra_Id</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    @if (Model.Count() > 0)
+                    {
+                        <div class="table-responsive mb-3">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>@Html.DisplayNameFor(m => m.Compra_Id)</th>
+                                            <th>@Html.DisplayNameFor(m => m.Producto_Id)</th>
+                                            <th>@Html.DisplayNameFor(m => m.Purchases!.Fecha)</th>
+                                            <th>Html.DisplayNameFor(m => m.Purchases!.Proveedor_Id)</th>
+                                            <th>@Html.DisplayNameFor(m => m.Cantidad)</th>
+                                            <th>@Html.DisplayNameFor(m => m.Precio_Unitario)</th>
+                                            <th>@Html.DisplayNameFor(m => m.Total)</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                        <tr class="purchase-row-@item.DetalleCompra_Id">
+                                                <td>
+                                                    <strong>@item.Compra_Id</strong>
+                                                </td>
+                                                <td>@item.Products!.Descripcion</td>
+                                                <td>@item.Purchases!.Fecha</td>
+                                                <td>item.Purchases!.Suppliers!.Nombre</td>
+                                                <td>@item.Cantidad</td>
+                                                <td>@item.Precio_Unitario</td>
+                                                <td>@item.Total</td>
+                                                <td>
+                                                    <a class="me-3">
+                                                        <img class="edit-icon" src="~/img/icons/edit.svg" alt="img">
+                                                    </a>
+                                                    @if (rol == "Administrador")
+                                                    {
+                                                        <a class="confirm-text delete-purchase" data-purchase-id="@item.DetalleCompra_Id">
+                                                            <img src="~/img/icons/delete.svg" alt="img">
+                                                        </a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                    }
+                    else
+                    {
+                        <p>No hay Registros</p>
+                    }
+                }
+            </div>
+            <form asp-action="Editpurchase" method="post">
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <!--<input type="hidden" name="Producto_Id" class="producto-input" />-->
+                    <input type="hidden" name="Compra_Id" value="@ViewBag.Compra_Id" />
+                    <input type="hidden" name="DetalleCompra_Id" class="codigo-input" />
+                    <input type="hidden" name="Usuario_Id" class="user-input" value="@ViewData["userId"]" />
+                    <input type="hidden" name="userRole" value="@rol" />
+
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Producto</label>
+                            <select name="Producto_Id" class="select producto-select" asp-items="ViewBag.Productos"></select>
+                            <span class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Fecha de edición</label>
+                            <div class="input-groupicon">
+                                <input type="text" name="Purchases.Fecha" placeholder="DD-MM-YYYY" class="datetimepicker fecha-input" readonly>
+                                <div class="addonset">
+                                    <img src="~/img/icons/calendars.svg" alt="img">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Prooveedor</label>
+                            <select name="Purchases.Proveedor_Id" class="select proveedor-select" asp-items="ViewBag.Proveedores"></select>
+                            <span class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Cantidad</label>
+                            <input type="text" name="Cantidad" class="cantidad-input" onkeypress="return SoloNumeros(event);" placeholder="0" />
+                            <span class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label>Precio</label>
+                            <input type="text" name="Precio_Unitario" class="precio-input" onkeypress="return SoloNumeros(event);" placeholder="0" />
+                            <span class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="row">
+                        <div class="col-lg-6 ">
+                            <div class="total-order w-100 max-widthauto m-auto mb-4">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 ">
+                            <div class="total-order w-100 max-widthauto m-auto mb-4">
+                                <input type="hidden" name="Total" id="total-input" readonly />
+                                <input type="hidden" name="Purchases.Total_Compra" class="monto-final" id="monto-final-input" readonly />
+
+                                <ul>
+                                    <li class="total">
+                                        <h4>Total</h4>
+                                        <h5 class="total-h5">C$ 0.00</h5>
+                                    </li>
+                                    <li class="total">
+                                        <h4>Monto final de la venta</h4>
+                                        <h5 class="monto-final-h5">C$ 0.00</h5>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn btn-submit me-2">
+                            Actualizar
+                        </button>
+                        <a asp-controller="Purchase" asp-action="Purchaselist" class="btn btn-cancel">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@{
+    var url = Url.Action("Editpurchase", "Purchase");
+}
+@section scripts {
+    <script src="~/js/validations.js"></script>
+    <script>
+        var montoFinalOriginal = 0;
+        var cantidadOriginal = 0;
+        var totalOriginal = 0;
+        // Función para limpiar los campos
+        function limpiarCampos() {
+            // Limpiar los inputs y select
+            $('.fecha-input').val('');
+            $('.codigo-input').val('');
+            $('.cantidad-input').val('');
+            $('.total-h5').text('C$ 0.00');
+            $('.monto-final-h5').text('C$ 0.00');
+            $('input[name="Precio_Unitario"]').val('');
+            $('input[name="Total"]').val('');
+
+            // Reiniciar los select a su valor inicial
+            $('.producto-select').val($('.producto-select option:first').val()).trigger('change');
+            $('.proveedor-select').val($('.proveedor-select option:first').val()).trigger('change');
+        }
+        
+        $(document).ready(function () {
+            function getFormattedDate() {
+                var date = new Date();
+                var year = date.getFullYear();
+                var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                var day = ("0" + date.getDate()).slice(-2);
+                var hours = ("0" + date.getHours()).slice(-2);
+                var minutes = ("0" + date.getMinutes()).slice(-2);
+                var seconds = ("0" + date.getSeconds()).slice(-2);
+
+                return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+            }
+
+            // Cuando se hace clic en el icono de editar
+            $(document).on('click', '.edit-icon', function () {
+                // Obtener los datos de la fila
+                var codigo = $(this).closest('tr').find('td:eq(0)').text();
+                var producto = $(this).closest('tr').find('td:eq(1)').text();
+                var proveedor = $(this).closest('tr').find('td:eq(3)').text();
+                var cantidad = $(this).closest('tr').find('td:eq(4)').text();
+                var precio = $(this).closest('tr').find('td:eq(5)').text();
+                var total = $(this).closest('tr').find('td:eq(6)').text();
+
+                // Obtener la fecha y hora actual
+                var formattedDate = getFormattedDate();
+                $('.fecha-input').val(formattedDate);
+                var montoFinal = ObtenerMontoFinalCompra(codigo);
+                console.log(montoFinal);
+                // Establecer los valores en los elementos de la interfaz de usuario
+                $('.codigo-input').val(codigo);
+                $('.cantidad-input').val(cantidad);
+                $('.total-h5').text('C$ ' + total);
+                $('input[name="Precio_Unitario"]').val(precio);
+                $('input[name="Total"]').val(total);
+                $('.monto-final-h5').text('C$ ' + montoFinal);
+                $('.monto-final').val(montoFinal);
+                cantidadOriginal = cantidad;
+                totalOriginal = total;
+                montoFinalOriginal = montoFinal;
+
+                // Para el select de producto
+                $('.producto-select').val($('.producto-select option').filter(function () {
+                    return $(this).text().trim() === producto.trim();
+                }).val()).trigger('change');
+
+                // Para el select de proveedor
+                $('.proveedor-select').val($('.proveedor-select option').filter(function () {
+                    return $(this).text().trim() === proveedor.trim();
+                }).val()).trigger('change');
+
+            });
+
+            // Función para obtener el monto final de la factura desde el servidor
+            function ObtenerMontoFinalCompra(compraId) {
+                var url = '@Url.Action("ObtenerMontoFinal", "Purchase")';
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: { id: compraId },
+                    async: false, // Hacer la solicitud síncrona para que la función espere la respuesta
+                    success: function (data) {
+                        montoFinalOriginal = data; // Establecer el monto final con el valor recibido del servidor
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log('Error al obtener el monto final de la factura:', errorThrown);
+                    }
+                });
+                return montoFinalOriginal;
+            }
+
+            // Cuando se cambia la cantidad, actualizar el total
+            $('.cantidad-input').on('input', actualizarTotal);
+            $('.precio-input').on('input', actualizarTotal);
+
+            function actualizarTotal() {
+                // Obtener la cantidad actual
+                var Total_Compra = 0;
+                var cantidadInput = $('.cantidad-input').val().trim();
+                var cantidad = cantidadInput !== '' ? parseInt(cantidadInput) : 0;
+                var precio = parseFloat($('input[name="Precio_Unitario"]').val());                
+                if(cantidadOriginal === cantidad){
+                    var total = totalOriginal;
+                    Total_Compra = montoFinalOriginal;       
+                    //console.log("1 if")
+                }
+                else{
+                    var total = cantidad * precio;
+                    var totalFinal = Math.abs(totalOriginal - total);
+                    if(totalOriginal > total){ Total_Compra = montoFinalOriginal - totalFinal; }
+                    else if(totalOriginal < total){ Total_Compra = montoFinalOriginal + totalFinal; }
+                    else{ Total_Compra = montoFinalOriginal; }                    
+                    //console.log("2 if")
+                }
+                $('.total-h5').text('C$ ' + total.toFixed(2));
+                $('input[name="Total"]').val(total.toFixed(2));
+                $('.monto-final-h5').text('C$ ' + Total_Compra.toFixed(2));
+                $('.monto-final').val(Total_Compra.toFixed(2));         
+            }
+
+            var compraId = '@ViewBag.Compra_Id';
+
+            $("form").submit(function (event) {
+                event.preventDefault(); // Evita el envío del formulario por defecto
+
+                var formData = $(this).serialize(); // Obtén los datos del formulario
+
+                $.ajax({
+                    url: $(this).attr("action"), // URL a la que se enviará la petición
+                    type: $(this).attr("method"), // Método de envío (POST en este caso)
+                    contentType: "application/x-www-form-urlencoded", // Tipo de contenido de los datos
+                    data: formData, // Datos del formulario
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: "Compra actualizada",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "OK"
+                            }).then((result) => {
+                                // Obtener los datos actualizados cuando el usuario cierre el mensaje
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: '@Url.Action("GetPurchaseDetails", "Purchase")',
+                                        type: 'GET',
+                                        data: { id: compraId },
+                                        success: function (response) {
+                                            // Actualizar la tabla con los datos actualizados
+                                            $('table tbody').empty();
+                                            $.each(response.$values, function (i, item) {
+                                                var editIcon = '<a class="me-3 edit-icon"><img src="/img/icons/edit.svg" alt="img"></a>';
+                                                //var deleteIcon = '<a class="confirm-text delete-purchase" data-purchase-id=' + item.detalleCompra_Id + '><img src="/img/icons/delete.svg" alt="img"></a>';
+                                                var userRole = $('#userRole').val();
+                                                var deleteIcon = '';
+
+                                                if (userRole == 'Administrador') {
+                                                    deleteIcon = '<a class="confirm-text delete-purchase" data-purchase-id=' + item.detalleCompra_Id + '><img src="/img/icons/delete.svg" alt="img"></a>';
+                                                }
+                                                // Agregar la descripción del producto a la fila de la tabla
+                                                $('table tbody').append(
+                                                    '<tr class="purchase-row-' + item.detalleCompra_Id + '"><td>' + item.compra_Id +
+                                                    '</strong></td><td>' + item.producto_Descripcion +
+                                                    '</td><td>' + item.fecha +
+                                                    '</td><td>' + item.proveedor_Nombre +
+                                                    '</td><td>' + item.cantidad +
+                                                    '</td><td>' + item.precio_Unitario +
+                                                    '</td><td>' + item.total +
+                                                    '</td><td>' + editIcon + deleteIcon +
+                                                    '</td></tr>');
+                                            });
+                                            limpiarCampos(); // Limpiar campos después de la actualización
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "OK"
+                            });
+                            limpiarCampos(); // Limpiar campos en caso de error
+                        }
+                    },
+                    error: function () {
+                        // Si hubo un error en la petición Ajax, muestra un mensaje de error
+                        Swal.fire({
+                            title: "Error",
+                            text: "Se produjo un error al procesar la solicitud.",
+                            icon: "error",
+                            confirmButtonColor: "#d33",
+                            confirmButtonText: "OK"
+                        });
+                        limpiarCampos(); // Limpiar campos en caso de error
+                    }
+                });
+            });
+        });
+    </script>
+    <!--Eliminate-->
+    <script>
+        $(document).ready(function () {
+            $(document).on("click", ".delete-purchase", function () {
+                var purchaseId = $(this).data("purchase-id");
+                console.log("id: "+purchaseId);
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "¡No podrás revertir esto!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, eliminarlo",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarProducto(purchaseId);
+                    }
+                });
+            });
+        });
+
+        function eliminarProducto(purchaseId) {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            $.ajax({
+                url: '/Purchase/DeleteConfirmed',
+                type: 'POST',
+                data: {
+                    id: purchaseId,
+                    __RequestVerificationToken: token
+                },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: "¡Eliminación exitosa!",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonColor: "#3085d6",
+                            confirmButtonText: "Ok",
+                        }).then((result) => {
+                            $(".purchase-row-" + purchaseId).remove();
+                            if ($('table tbody tr').length == 0) {
+                                window.location.href = "/Purchase/Purchaselist";
+                            }
+                            limpiarCampos();
+                        });
+                    }
+                    else{
+                        Swal.fire({
+                            title: "Error",
+                            text: response.message,
+                            icon: "error",
+                            confirmButtonColor: "#d33",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr, status, error);
+                }
+            });
+        }
+    </script>
+
+}
+
+

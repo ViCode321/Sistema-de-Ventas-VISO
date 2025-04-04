@@ -1,0 +1,332 @@
+﻿@using System.Security.Claims
+@{
+    string rol = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+}
+@model IEnumerable<project_DBA_VISO.Models.Invoice_Detail>
+@{
+    ViewData["Title"] = "Lista de ventas";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Lista de ventas</h4>
+            <!--<h6>Manage your sales</h6>-->
+        </div>
+        <div class="page-btn">
+            <a asp-controller="Sales" asp-action="Newsales" class="btn btn-added">
+                <img src="~/img/icons/plus.svg" alt="img"
+                     class="me-1">Nueva venta
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="table-top">
+                <div class="search-set">
+                    <div class="search-input">
+                        <a class="btn btn-searchset">
+                            <img src="~/img/icons/search-white.svg"
+                                 alt="img">
+                        </a>
+                    </div>
+                </div>                
+                <div class="wordset">
+                    @if (rol == "Administrador")
+                    {
+                    <ul>
+                        <li>
+                            <a href="/Sales/ExportToPdf" data-bs-toggle="tooltip" data-bs-placement="top" title="pdf">
+                                <img src="~/img/icons/pdf.svg" alt="img">
+                            </a>
+                        </li>
+                        <li>
+                            <a id="exportExcel" data-bs-toggle="tooltip" data-bs-placement="top" title="excel">
+                                <img src="~/img/icons/excel.svg" alt="img">
+                            </a>
+                        </li>
+                    </ul>
+                    }
+                </div>
+            </div>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="table-responsive">
+                    <!--Cambio de mayor a menor-->
+                    @if (Model.Count() < 0)
+                    {
+                    <table id="tabla" class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(c => c.DetalleFactura_Id)</th>
+                                <th>@Html.DisplayNameFor(pd => pd.Producto_Id)</th>
+                                <th>@Html.DisplayNameFor(cl => cl.Invoices!.Cliente_Id)</th>
+                                <th>@Html.DisplayNameFor(u => u.Usuario_Id)</th>
+                                <th>@Html.DisplayNameFor(m => m.Invoices!.Moneda_Id)</th>
+                                <th>@Html.DisplayNameFor(ca => ca.Cantidad)</th>
+                                <th>@Html.DisplayNameFor(pr => pr.Precio)</th>
+                                <th class="text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(i => item.DetalleFactura_Id)</td>                                        
+                                    <td>
+                                        <a asp-action="Salesdetails" asp-route-id="@item.Factura_Id">
+                                            @Html.DisplayFor(i => item.Products!.Descripcion)
+                                        </a>
+                                    </td>
+                                    <td> 
+                                        @if (item.Invoices != null && item.Invoices.Clients != null)
+                                        {
+                                            <a>@Html.DisplayFor(i => item.Invoices.Clients.Nombre)</a>
+                                            <a>@Html.DisplayFor(i => item.Invoices.Clients.Apellido)</a>
+                                        }
+                                    </td>
+                                    <td>@Html.DisplayFor(i => item.Users!.Nombre)</td>
+                                    <td>
+                                        @if (item.Invoices != null && item.Invoices.Currencies != null)
+                                        {
+                                            @Html.DisplayFor(i => item.Invoices.Currencies.Tipo)
+                                        }
+                                    </td>
+                                    <td>@Html.DisplayFor(i => item.Cantidad)</td>
+                                    <td>@Html.DisplayFor(i => item.Precio)</td>
+
+                                    <td class="text-center">
+                                        <a class="action-set" data-bs-toggle="dropdown"
+                                            aria-expanded="true">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" asp-action="Salesdetails" asp-route-id="@item.Factura_Id">
+                                                    <img src="~/img/icons/eye1.svg" class="me-2" alt="img">Detalles
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item show-payment" data-numero-factura="@item.Factura_Id">
+                                                    <img src="~/img/icons/dollar-square.svg" class="me-2" alt="img">
+                                                    Mostrar Pago
+                                                </a>
+                                            </li>
+                                            @if (rol == "Administrador")
+                                            {
+                                                <!--<li>
+                                                    <a class="dropdown-item" asp-action="Editsales" asp-route-id="item.Factura_Id">
+                                                        <img src="~/img/icons/edit.svg" class="me-2" alt="img">Editar
+                                                    </a>
+                                                </li>-->
+                                                <li>
+                                                    <a class="dropdown-item delete-Sale" data-sale-id="@item.DetalleFactura_Id">
+                                                        <img src="~/img/icons/delete1.svg" class="me-2"
+                                                                alt="img">Anular
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    }
+                    else
+                    {
+                        <p class="text-center">No hay Registros</p>
+                    }
+                </div>
+                <!--Modal para mostar los pagos-->
+            }
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="showpayment" tabindex="-1" aria-labelledby="showpayment" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Show Payments</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Cantidad </th>
+                                <th>Precio </th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bor-b1">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    var url = Url.Action("GetPay", "Sales");
+}
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var tabla = $('#tabla').DataTable();
+            var userRole = '@rol';
+
+            function actualizarFormulario(data) {
+                tabla.clear();
+
+                $.each(data.$values, function (i, item) {
+                    var producto = '<a href="/Sales/Salesdetails/' + item.factura_Id + '">' + item.producto_Descripcion + '</a>';
+                    var detailsIcon = '<a class="dropdown-item" href="/Sales/Salesdetails/' + item.factura_Id + '"><img src="/img/icons/eye1.svg" class="me-2" alt="img">Detalles</a>';
+                    //var editIcon = '<a class="dropdown-item" href="/Sales/Editsales/' + item.factura_Id + '"><img src="/img/icons/edit.svg" class="me-2" alt="img">Editar</a>';
+                    var showPaymentIcon = '<a class="dropdown-item show-payment" data-numero-factura="' + item.factura_Id + '"><img src="/img/icons/dollar-square.svg" class="me-2" alt="img">Mostrar Pago</a>';
+                    var deleteIcon = '<a class="dropdown-item delete-Sale" data-sale-id="' + item.detalleFactura_Id + '"><img src="/img/icons/delete1.svg" class="me-2" alt="img">Borrar</a>';
+
+                    var clientName = '<a>' + item.cliente_nombre + ' </a><a>' + item.cliente_apellido + '</a>';
+
+                    var actionCell = '<div class="text-center">' +
+                        '<a class="action-set" data-bs-toggle="dropdown" aria-expanded="true">' +
+                        '<i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>' +
+                        '<ul class="dropdown-menu">';
+
+                    if (userRole == 'Administrador') {
+                        //actionCell += '<li>' + detailsIcon + '</li><li>' + showPaymentIcon + '</li><li>' + editIcon + '</li><li>' + deleteIcon + '</li>';
+                        actionCell += '<li>' + detailsIcon + '</li><li>' + showPaymentIcon + '</li><li>' + deleteIcon + '</li>';
+                    } else {
+                        actionCell += '<li>' + detailsIcon + '</li><li>' + showPaymentIcon + '</li>';
+                    }
+                    actionCell += '</ul></div>';
+
+                    var row = [
+                        item.detalleFactura_Id,
+                        producto,
+                        clientName,
+                        item.usuario_nombre,
+                        item.moneda,
+                        item.cantidad,
+                        item.precio,
+                        actionCell
+                    ];
+
+                    tabla.row.add(row);
+                });
+
+                tabla.draw(false);
+            }
+
+            function eliminarVenta(saleId, currentPage) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                $.ajax({
+                    url: '/Sales/DeleteConfirmed',
+                    type: 'POST',
+                    data: {
+                        id: saleId,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: "¡Acción exitosa!",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "Ok",
+                            }).then((result) => {
+                                $.ajax({
+                                    url: '/Sales/SaleslistJson',
+                                    type: 'GET',
+                                    success: function (updatedData) {
+                                        actualizarFormulario(updatedData);
+                                        tabla.page(currentPage).draw('page');
+                                    }
+                                });
+                            });
+                        }
+                        else {
+                            Swal.fire({
+                                title: "Error",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    }
+                });
+            }
+
+            $(document).on('click', '.show-payment', function () {
+                var numeroFactura = $(this).data('numero-factura');
+                var url = '@url';
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: { numeroFactura: numeroFactura },
+                    success: function (data) {
+                        var paymentDetails = data.$values[0];
+                        $('#showpayment .modal-title').text('Detalles de pago para la factura: #' + paymentDetails.factura_Id);
+                        var tableBody = $('#showpayment table tbody');
+                        tableBody.empty();
+                        $.each(data.$values, function (index, detail) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(detail.nombre + ' ' + detail.apellido));
+                            row.append($('<td>').text(detail.cantidad));
+                            row.append($('<td>').text(detail.precio));
+                            row.append($('<td>').text(detail.total_ventas));
+                            tableBody.append(row);
+                        });
+                        $('#showpayment').modal('show');
+                    }
+                });
+            });
+
+            $(document).on("click", ".delete-Sale", function () {
+                var saleId = $(this).data("sale-id");
+                var currentPage = tabla.page();
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "¡No podrás revertir esto!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, eliminarlo",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarVenta(saleId, currentPage);
+                    }
+                });
+            });
+        });
+        //para exel
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("exportExcel").addEventListener("click", function () {
+                window.location.href = '/Sales/ExportToExcel';
+            });
+        });
+    </script>
+}

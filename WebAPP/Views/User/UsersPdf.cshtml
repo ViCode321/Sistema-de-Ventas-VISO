@@ -1,0 +1,81 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Usuarios</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h1 {
+            color: #4B0082; /* Color lila */
+        }
+
+        h2 {
+            color: #1E90FF; /* Color celeste */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1E90FF; /* Color celeste */
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .header-image {
+            width: 150px;
+            height: auto;
+            float: right;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <img src="~/img/icons/viso1.jpeg" alt="Logo" class="header-image" />
+    <h1>Librería VISO</h1>
+    <h2>Lista de Usuarios</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Usuario</th>
+                <th>Nombre</th>
+                <th>Rol</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Usuario_Id</td>
+                    <td>@user.Nombre</td>
+                    <td>@(user.User_Rol != null ? user.User_Rol.Rol : "")</td>
+                    <td>@(user.Status ? "Activo" : "Inactivo")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,126 @@
+﻿@model IEnumerable<project_DBA_VISO.Models.Invoice_Detail>
+@{
+    ViewData["Title"] = "Detalles de venta";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Detalles de Venta</h4>
+            <!--<h6>View sale details</h6>-->
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">            
+            <div class="card-sales-split">
+                <h2>Detalles</h2>
+                <ul>
+                    <li>
+                        <a class="dropdown-item" asp-action="Editsales" asp-route-id="@ViewBag.Factura_Id">
+                            <img src="~/img/icons/edit.svg" alt="img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);"><img src="~/img/icons/pdf.svg" alt="img"></a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);"><img src="~/img/icons/excel.svg" alt="img"></a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="invoice-box table-height"
+                style="max-width: 1600px;width:100%;overflow: auto;margin:15px auto;padding: 0;font-size: 14px;line-height: 24px;">
+                <table cellpadding="0" cellspacing="0"
+                    style="width: 100%;line-height: inherit;text-align: left;">
+                    <tbody>
+                        <tr class="heading">
+                            <td
+                                style="padding: 5px;vertical-align: middle;font-weight: 600;font-size: 14px;padding: 10px; ">
+                                Código
+                            </td>
+                            <td
+                                style="padding: 5px;vertical-align: middle;font-weight: 600;font-size: 14px;padding: 10px; ">
+                                Producto
+                            </td>
+                            <td
+                                style="padding: 5px;vertical-align: middle;font-weight: 600;font-size: 14px;padding: 10px; ">
+                                Cliente
+                            </td>
+                            <td
+                                style="padding: 5px;vertical-align: middle;font-weight: 600; font-size: 14px;padding: 10px; ">
+                                Fecha
+                            </td>
+                            <td
+                                style="padding: 5px;vertical-align: middle;font-weight: 600; font-size: 14px;padding: 10px; ">
+                                Moneda
+                            </td>
+                            <td
+                                style="padding: 5px;vertical-align: middle;font-weight: 600; font-size: 14px;padding: 10px; ">
+                                Cantidad
+                            </td>
+                            <td
+                                style="padding: 5px;vertical-align: middle;font-weight: 600; font-size: 14px;padding: 10px; ">
+                                Precio
+                            </td>
+                            <td
+                                style="padding: 5px;vertical-align: middle;font-weight: 600; font-size: 14px;padding: 10px; ">
+                                Sub Total
+                            </td>
+                        </tr>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="details" style="border-bottom:1px solid #E9ECEF ;">
+                                <td style="padding: 10px;vertical-align: top; ">
+                                    @item.Factura_Id
+                                </td>
+                                <td style="padding: 10px;vertical-align: top; display: flex;align-items: center;">
+                                    @if (!string.IsNullOrEmpty(item.Products.Image))
+                                    {
+                                        <img src="@item.Products.Image" alt="img" class="me-2" style="width:40px;height:40px;">
+                                    }
+                                    @item.Products.Descripcion
+                                </td>
+                                <td style="padding: 10px;vertical-align: top; ">
+                                    @item.Invoices.Clients.Nombre
+                                    @item.Invoices.Clients.Apellido
+                                </td>
+                                <td style="padding: 10px;vertical-align: top; ">
+                                    @item.Invoices.Fecha
+                                </td>
+                                <td style="padding: 10px;vertical-align: top; ">
+                                    @item.Invoices.Currencies.Tipo
+                                </td>
+                                <td style="padding: 10px;vertical-align: top; ">
+                                    @item.Cantidad
+                                </td>
+                                <td style="padding: 10px;vertical-align: top; ">
+                                    @item.Precio
+                                </td>
+                                <td style="padding: 10px;vertical-align: top; ">
+                                    @item.Total_ventas
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="total-order">
+                    <ul>
+                        <li>
+                            <h4></h4>
+                            <h5></h5>
+                        </li>
+                        <li class="total">
+                            <h4>Monto Final de venta:</h4>
+                            <h4>@ViewBag.MontoFinalVenta</h4>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-12">
+                    <a asp-controller="Sales" asp-action="Saleslist" class="btn btn-cancel">Regresar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

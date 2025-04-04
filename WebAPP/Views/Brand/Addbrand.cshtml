@@ -1,0 +1,120 @@
+﻿@model project_DBA_VISO.Models.Brand
+@{
+    ViewData["Title"] = "Agregar Marca";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Nueva Marca</h4>
+            <!--<h6>Create new Brand</h6>-->
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="brandForm" asp-action="Addbrand" method="post" enctype="multipart/form-data">
+                <div class="row">
+                <div class="col-lg-3 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label asp-for="Nombre">Nombre</label>
+                        <input asp-for="Nombre" type="text">
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label>Imagen de la marca</label>
+                        <div class="image-upload">
+                            <input type="file" id="Image" name="Image">
+                                <div class="image-uploads">
+                                <img src="~/img/icons/upload.svg" alt="img">
+                                <h4>Arrastra y suelta un archivo para cargar</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="product-list">
+                        <ul class="row">
+                            <li>
+                                <div class="productviews">
+                                    <img id="imagePreview" src="#" alt="img" />
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-submit me-2">
+                        Crear
+                    </button>
+                    <a asp-controller="Brand" asp-action="Brandlist" class="btn btn-cancel">Cancel</a>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/image.js"></script>
+    <script>
+        function limpiarCampos() {
+            var form = document.getElementById('brandForm');
+
+            var inputs = form.getElementsByTagName('input');
+
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].value = '';
+            }
+
+            document.getElementById('imagePreview').src = '';
+
+            var spans = form.getElementsByTagName('span');
+            for (var j = 0; j < spans.length; j++) {
+                spans[j].innerText = '';
+            }
+        }
+        $('#brandForm').on('submit', function (event) {
+            event.preventDefault();
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: "¡Marca creada!",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonColor: "#3085d6",
+                            confirmButtonText: "Ok",
+                        }).then((result) => {
+                            limpiarCampos();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error",
+                            text: response.message,
+                            icon: "error",
+                            confirmButtonColor: "#d33",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr, status, error);
+                }
+
+            });
+        });
+
+    </script>
+}
+

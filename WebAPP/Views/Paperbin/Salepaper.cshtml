@@ -1,0 +1,148 @@
+﻿@model IEnumerable<project_DBA_VISO.Models.Invoice_Detail>
+@{
+    ViewData["Title"] = "Ventas eliminadas";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Lista de ventas eliminadas</h4>
+            <!--<h6>Manage your sales</h6>-->
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="table-top">
+                <div class="search-set">
+                    <div class="search-input">
+                        <a class="btn btn-searchset">
+                            <img src="~/img/icons/search-white.svg"
+                                 alt="img">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="table-responsive">
+                    <table class="table  datanew">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(c => c.DetalleFactura_Id)</th>
+                                <th>@Html.DisplayNameFor(pd => pd.Producto_Id)</th>
+                                <th>@Html.DisplayNameFor(cl => cl.Invoices!.Cliente_Id)</th>
+                                <th>@Html.DisplayNameFor(u => u.Usuario_Id)</th>
+                                <th>@Html.DisplayNameFor(m => m.Invoices!.Moneda_Id)</th>
+                                <th>@Html.DisplayNameFor(ca => ca.Cantidad)</th>
+                                <th>@Html.DisplayNameFor(pr => pr.Precio)</th>
+                                <th class="text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+
+                                <tr class="purchase-row-@item.DetalleFactura_Id">
+                                    <td>@Html.DisplayFor(i => item.DetalleFactura_Id)</td>
+                                    <td>
+                                        <a>@Html.DisplayFor(i => item.Products!.Descripcion)</a>
+                                    </td>
+                                    <td>
+                                        @if (item.Invoices != null && item.Invoices.Clients != null)
+                                        {
+                                            <a>@Html.DisplayFor(i => item.Invoices.Clients.Nombre)</a>
+                                            <a>@Html.DisplayFor(i => item.Invoices.Clients.Apellido)</a>
+                                        }
+                                    </td>
+                                    <td>@Html.DisplayFor(i => item.Users!.Nombre)</td>
+                                    <td>
+                                        @if (item.Invoices != null && item.Invoices.Currencies != null)
+                                        {
+                                            @Html.DisplayFor(i => item.Invoices.Currencies.Tipo)
+                                        }
+                                    </td>
+                                    <td>@Html.DisplayFor(i => item.Cantidad)</td>
+                                    <td>@Html.DisplayFor(i => item.Precio)</td>
+
+                                    <td class="text-center">
+                                        <a class="action-set" href="javascript:void(0);" data-bs-toggle="dropdown"
+                                           aria-expanded="true">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item delete-Sale" data-sale-id="@item.DetalleFactura_Id">
+                                                    <img src="~/img/icons/delete1.svg" class="me-2"
+                                                         alt="img">Borrar
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!--Eliminate-->
+    <script>
+        $(document).ready(function () {
+            $(document).on("click", ".delete-Sale", function () {
+                var saleId = $(this).data("sale-id");
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "¡No podrás revertir esto!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, eliminarlo",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        eliminarProducto(saleId);
+                    }
+                });
+            });
+        });
+
+        function eliminarProducto(saleId) {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            $.ajax({
+                url: '/Sales/DeleteConfirmed',
+                type: 'POST',
+                data: {
+                    id: saleId,
+                    __RequestVerificationToken: token
+                },
+                success: function (result) {
+                    Swal.fire({
+                        title: "¡Eliminación exitosa!",
+                        text: "¡Venta eliminada con éxito!",
+                        icon: "success",
+                        confirmButtonColor: "#3085d6",
+                        confirmButtonText: "Ok",
+                    });
+                    $(".purchase-row-" + saleId).remove();
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        title: "Error",
+                        text: 'No se pudo eliminar la venta',
+                        icon: "error",
+                        confirmButtonColor: "#d33",
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+        }
+    </script>
+}

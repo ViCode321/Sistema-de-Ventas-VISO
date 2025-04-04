@@ -1,0 +1,402 @@
+﻿@model project_DBA_VISO.Models.Views.NewexpenseViewModel
+@{
+    ViewData["Title"] = "Nueva Compra";
+}
+
+<div class="content">
+    <div class="page-header">
+        <div class="page-title">
+            <h4>Agregar compra</h4>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label>Proveedor</label>
+                        <div class="input-group mb-3">
+                            <select class="select proveedor-select" asp-items="ViewBag.Proveedores"></select>                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label>Producto</label>
+                        <select class="select producto-select" asp-items="ViewBag.Productos"></select>
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label>Cantidad</label>
+                        <input type="text" name="Cantidad" class="cantidad-input" value="" placeholder="0" />
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label>Precio</label>
+                        <input type="text" name="Precio" class="precio-input" value="" placeholder="0" />
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-success">Agregar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th class="fecha">Fecha</th>
+                                <th>Proveedor</th>
+                                <th class="cantidad">Cantidad</th>
+                                <th class="precio">Precio</th>
+                                <th class="text-end">Total</th>
+                                <th>..</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @Html.AntiForgeryToken()
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <input type="hidden" name="Usuario_Id" class="user-input" value="@ViewData["userId"]" readonly />
+            <input type="hidden" name="Total_Compra" class="total-input" />
+            <div class="row">
+                <div class="col-lg-12 float-md-right">
+                    <div class="total-order">
+                        <ul>
+                            <li class="total">
+                                <h4>Total Completo</h4>
+                                <h5 id="total-h5">$ 0.00</h5>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <a class="btn btn-submit me-2">Guardar</a>
+                    <a asp-controller="Purchase" asp-action="Purchaselist" class="btn btn-cancel">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    var url = Url.Action("Newpurchase", "Purchase");
+
+}
+@section scripts{
+    <script src="~/js/validations.js"></script>
+    <script>
+        var totalfinal = 0;
+        function getFormattedDate() {
+            var date = new Date();
+            var year = date.getFullYear();
+            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+            var day = ("0" + date.getDate()).slice(-2);
+            var hours = ("0" + date.getHours()).slice(-2);
+            var minutes = ("0" + date.getMinutes()).slice(-2);
+            var seconds = ("0" + date.getSeconds()).slice(-2);
+
+            return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+        }
+        function limpiar(){
+            $("table tbody").empty();
+            $(".cantidad-input").val("");
+            $(".precio-input").val("");
+            $('#total-h5').text("");
+        }
+
+        $(document).ready(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            $(".btn-success").click(function () {
+                var producto = $('.producto-select').find('option:selected').text();
+                var productoId = $(".producto-select").val();
+                var proveedor = $('.proveedor-select').find('option:selected').text();
+                var proveedorId = $(".proveedor-select").val();
+                var cantidad = $(".cantidad-input").val();
+                var precio = $(".precio-input").val();
+                var total = cantidad * precio;
+                var fecha = getFormattedDate();
+
+                if (cantidad === '' || precio === '') {
+                    Swal.fire({
+                        title: "¡Error!",
+                        text: "Cantidad y precio deben ser mayor a 0",
+                        icon: "error",
+                        confirmButtonColor: "#d33",
+                        confirmButtonText: "OK"
+                    });
+                    return;
+                }
+
+                var newRow = `<tr>
+                    <td data-producto-id="${productoId}">${producto}</td>
+                    <td class="fecha">${fecha}</td>
+                    <td data-proveedor-id="${proveedorId}">${proveedor}</td>
+                    <td class="cantidad">${cantidad}</td>
+                    <td class="precio">${precio}</td>
+                    <td class="text-end">${total.toFixed(2)}</td>
+                    <td>
+                        <a class="delete-set"><img src="/img/icons/delete.svg" alt="svg"></a>
+                    </td>
+                </tr>`;
+                $("table tbody").append(newRow);
+
+                totalfinal += total;
+                $('#total-h5').text('C$' + totalfinal.toFixed(2));
+                $('input[name="Total_Compra"]').val(totalfinal.toFixed(2));
+            });
+
+            $(document).on("click", ".delete-set", function () {
+                var row = $(this).closest("tr");
+                var total = parseFloat(row.find(".text-end").text());
+
+                totalfinal -= total;
+                $('#total-h5').text('C$' + totalfinal.toFixed(2));
+                $('input[name="Total_Compra"]').val(totalfinal.toFixed(2));
+
+                row.remove();
+            });
+
+            $(".btn-submit").click(function (event) {
+                event.preventDefault();
+
+                var newExpense = {
+                    Purchase_Details: [],
+                    Users: [],
+                };
+
+                $("table tbody tr").each(function () {
+                    var productId = parseInt($(this).find("td[data-producto-id]").data("producto-id"));
+                    var proveedorId = parseInt($(this).find("td[data-proveedor-id]").data("proveedor-id"));
+                    var cantidad = parseInt($(this).find(".cantidad").text());
+                    var precio = parseFloat($(this).find(".precio").text());
+                    var total = parseFloat($(this).find(".text-end").text());
+
+                    var detail = {
+                        Producto_Id: productId,
+                        Proveedor_Id: proveedorId, // Incluido Proveedor_Id
+                        Cantidad: cantidad,
+                        Precio_Unitario: precio,
+                        Total: total
+                    };
+                    newExpense.Purchase_Details.push(detail);
+                });
+
+                var userId = parseInt($(".user-input").val());
+                newExpense.Users.push({ Usuario_Id: userId });
+
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                var url = '@url';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify(newExpense),
+                    headers: {
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: "¡Compra realizada!",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "Ok",
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "¡Error!",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                        limpiar();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(textStatus, errorThrown);
+                        limpiar();
+                    }
+                });
+            });
+
+        });
+
+        /*$(document).ready(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            $(".btn-success").click(function () {
+                var producto = $('.producto-select').find('option:selected').text();
+                var productoId = $(".producto-select").val();
+                var proveedor = $('.proveedor-select').find('option:selected').text();
+                var proveedorId = $(".proveedor-select").val();
+                var cantidad = $(".cantidad-input").val();
+                var precio = $(".precio-input").val();
+                var total = cantidad * precio;
+                var fecha = getFormattedDate();
+                var cantidadinput = parseInt(cantidad);
+                var precioinput = parseFloat(precio);
+                if (cantidad === '' || precio === '') {
+                    Swal.fire({
+                        title: "¡Error!",
+                        text: "Cantidad y precio deben ser mayor a 0",
+                        icon: "error",
+                        confirmButtonColor: "#d33",
+                        confirmButtonText: "OK"
+                    });
+                    return;
+                }
+                var newRow = `<tr>
+                    <td data-producto-id="${productoId}">${producto}</td>
+                    <td class="fecha">${fecha}</td>
+                    <td data-proveedor-id="${proveedorId}">${proveedor}</td>
+                    <td class="cantidad">${cantidad}</td>
+                    <td class="precio">${precio}</td>
+                    <td class="text-end">${total.toFixed(2)}</td>
+                    <td>
+                        <a class="delete-set"><img src="/img/icons/delete.svg" alt="svg"></a>
+                    </td>
+                </tr>`;
+                $("table tbody").append(newRow);
+
+                totalfinal += total;
+
+                $('#total-h5').text('C$' + totalfinal.toFixed(2));
+                $('input[name="Total_Compra"]').val(totalfinal.toFixed(2));
+
+                //$(".proveedor-select").prop("disabled", true);
+                
+            });
+
+            $(document).on("click", ".delete-set", function () {
+                var row = $(this).closest("tr");
+                var total = parseFloat(row.find(".text-end").text());
+
+                totalfinal -= total;
+
+                $('#total-h5').text('C$' + totalfinal.toFixed(2));
+                $('input[name="Total_Compra"]').val(totalfinal.toFixed(2));
+
+                row.remove();
+                //$(".proveedor-select").prop("disabled", false);
+
+            });
+
+            $(".btn-submit").click(function (event) {
+                event.preventDefault();
+                var newExpense = {
+                    Products: [],
+                    Purchase_Details: [],
+                    Purchases: [],
+                    Users: [],
+                    Suppliers: []
+                };
+
+                var totalfinalt = $('input[name="Total_Compra"]').val();
+                
+                $("table tbody tr").each(function () {
+                    var productId = parseInt($(this).find("td[data-producto-id]").data("producto-id"));
+                    var proveedorId = parseInt($(this).find("td[data-proveedor-id]").data("proveedor-id"));
+                    var cantidad = parseInt($(this).find(".cantidad").text());
+                    var precio = parseFloat($(this).find(".precio").text());
+                    var total = parseFloat($(this).find(".text-end").text());
+
+                    var detail = {
+                        Producto_Id: productId,
+                        //Proveedor_Id: proveedorId,
+                        Cantidad: cantidad,
+                        Precio_Unitario: precio,
+                        Total: total
+                    };
+                    newExpense.Purchases.push({ Proveedor_Id: proveedorId, Total_Compra: totalfinalt});
+
+                    newExpense.Purchase_Details.push(detail);
+                });
+
+                var userId = parseInt($(".user-input").val());
+                newExpense.Users.push({ Usuario_Id: userId });
+
+                                
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                var url = '@url';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify(newExpense),
+                    headers: {
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: "¡Compra realizada!",
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "Ok",
+                            });
+                            $(".proveedor-select").prop("disabled", false);
+                        } else {
+                            Swal.fire({
+                                title: "¡Error!",
+                                text: response.message,
+                                icon: "error",
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                        limpiar();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(textStatus, errorThrown);
+                        limpiar();
+                    }
+                });
+            });       
+        });                        */
+    </script>
+
+    <script>
+        /*Validacion de solo numeros*/
+        function SoloNumeros(event) {
+            var keynum;
+
+            if (window.event) {
+                keynum = event.keyCode;
+            }
+            else {
+                keynum = event.which;
+            }
+
+            if ((keynum > 47 && keynum < 58) || (keynum == 8) || (keynum == 13)) {
+                return true;
+            }
+            else {
+                Swal.fire({
+                    title: "Error",
+                    text: 'Solo puede ingresar números',
+                    icon: "warning",
+                    confirmButtonColor: "#d33",
+                    confirmButtonText: "OK"
+                });
+                return false;
+            }
+        }
+    </script>
+}
+

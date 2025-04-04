@@ -1,0 +1,91 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Productos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h1 {
+            color: #4B0082; /* Color lila */
+        }
+
+        h2 {
+            color: #1E90FF; /* Color celeste */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1E90FF; /* Color celeste */
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .header-image {
+            width: 150px;
+            height: auto;
+            float: right;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <img src="~/img/icons/viso1.jpeg" alt="Logo" class="header-image" />
+
+    <h1>Librería VISO</h1>
+    <h2>Lista de Productos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Producto ID</th>
+                <th>Descripción</th>
+                <th>Proveedor</th>
+                <th>Categoría</th>
+                <th>Marca</th>
+                <th>Cantidad</th>
+                <th>Costo</th>
+                <th>Precio</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.Producto_Id</td>
+                    <td>@product.Descripcion</td>
+                    <td>@product.Suppliers?.Nombre</td>
+                    <td>@(product.Categories?.Nombre ?? "N/A")</td>
+                    <td>@(product.Brands?.Nombre ?? "N/A")</td>
+                    <td>@product.Cantidad</td>
+                    <td>@product.Costo</td>
+                    <td>@product.Precio</td>
+                    <td>@(product.Status ? "Activo" : "Inactivo")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

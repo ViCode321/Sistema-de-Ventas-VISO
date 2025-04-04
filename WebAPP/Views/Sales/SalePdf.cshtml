@@ -1,0 +1,85 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Ventas</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h1 {
+            color: #4B0082; /* Color lila */
+        }
+
+        h2 {
+            color: #1E90FF; /* Color celeste */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1E90FF; /* Color celeste */
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .header-image {
+            width: 150px;
+            height: auto;
+            float: right;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <img src="~/img/icons/viso1.jpeg" alt="Logo" class="header-image" />
+
+    <h1>Librería VISO</h1>
+    <h2>Lista de Ventas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Factura</th>
+                <th>Nombre</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total ventas</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sales in Model)
+            {
+                <tr>
+                    <td>@sales.DetalleFactura_Id.ToString()</td>
+                    <td>@sales.Invoices?.Clients?.Nombre</td>
+                    <td>@sales.Products?.Descripcion</td>
+                    <td>@sales.Cantidad.ToString()</td>
+                    <td>@sales.Precio.ToString("C2")</td>
+                    <td>@sales.Total_ventas.ToString("C2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
